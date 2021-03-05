@@ -7,22 +7,21 @@
 
 import UIKit
 
-class DetailRecipeVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class DetailRecipeVC: UIViewController {
     
-    @IBOutlet weak var dishImageView: RecipeImageView! {
-        didSet {
-            dishImageView.layer.cornerRadius = 7
-        }
-    }
-
+    @IBOutlet weak var dishImageView: RecipeImageView!
+    
     @IBOutlet weak var caloriesOfDishLabel: UILabel!
     @IBOutlet weak var dailyValueLabel: UILabel!
     @IBOutlet weak var numberOfServingsLabel: UILabel!
     
     @IBOutlet weak var numberOfIngredientsLabel: UILabel!
     @IBOutlet weak var ingredientTableView: UITableView!
+    @IBOutlet weak var ingredientTVHeightConstraint: NSLayoutConstraint!
     
     @IBOutlet weak var nutritionTableView: UITableView!
+    @IBOutlet weak var nutritionTVHeightConstraint: NSLayoutConstraint!
+    
     
     var recipe: Recipe?
 
@@ -36,46 +35,18 @@ class DetailRecipeVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         setupUI()
     }
-    
+
     @IBAction func openWebsiteButton(_ sender: UIButton) {
         if let url = URL(string: recipe?.shareAs ?? "") {
             UIApplication.shared.open(url)
         }
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        var numberOfRows = 0
-        switch tableView {
-        case ingredientTableView: numberOfRows = recipe?.ingredients?.count ?? 0
-        case nutritionTableView: numberOfRows = recipe?.totalNutrients?.count ?? 0
-        default: print("Some things Wrong!!")
-        }
-        
-        return numberOfRows
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        var cell = UITableViewCell()
-        switch tableView {
-        case ingredientTableView:
-            cell = tableView.dequeueReusableCell(withIdentifier: "ingredientCell", for: indexPath)
-            cell.textLabel?.text = recipe?.ingredients?[indexPath.row].text
-            cell.backgroundColor = .black
-            cell.textLabel?.textColor = .orange
-        case nutritionTableView:
-            cell = tableView.dequeueReusableCell(withIdentifier: "nutritionCell", for: indexPath)
-            cell.textLabel?.text = nutrientForRecipe(index: indexPath.row)
-            cell.backgroundColor = .black
-            cell.textLabel?.textColor = .orange
-        default: print("Some things Wrong!!")
-        }
-        return cell
-    }
-    
     private func setupUI() {
         navigationItem.title = recipe?.label
         
         dishImageView.fetchImageRecipe(from: recipe?.image ?? "")
+        dishImageView.layer.cornerRadius = 7
         
         caloriesOfDishLabel.text = String(lround(recipe?.calories ?? 0))
         dailyValueLabel.text = totalDaily()
@@ -88,6 +59,8 @@ class DetailRecipeVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         ingredientTableView.backgroundColor = .black
         nutritionTableView.backgroundColor = .black
+        ingredientTVHeightConstraint.constant = CGFloat(recipe?.ingredients?.count ?? 0) * 43.5
+        nutritionTVHeightConstraint.constant = CGFloat(recipe?.totalNutrients?.count ?? 0) * 43.5
     }
     
     private func totalDaily() -> String {
@@ -117,4 +90,38 @@ class DetailRecipeVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         return recipeNutrient
     }
 
+}
+
+extension DetailRecipeVC: UITableViewDelegate, UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        var numberOfRows = 0
+        switch tableView {
+        case ingredientTableView:
+            numberOfRows = recipe?.ingredients?.count ?? 0
+        case nutritionTableView:
+            numberOfRows = recipe?.totalNutrients?.count ?? 0
+        default: print("Some things Wrong!!")
+        }
+        
+        return numberOfRows
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        var cell = UITableViewCell()
+        switch tableView {
+        case ingredientTableView:
+            cell = tableView.dequeueReusableCell(withIdentifier: "ingredientCell", for: indexPath)
+            cell.textLabel?.text = recipe?.ingredients?[indexPath.row].text
+            cell.backgroundColor = .black
+            cell.textLabel?.textColor = .orange
+        case nutritionTableView:
+            cell = tableView.dequeueReusableCell(withIdentifier: "nutritionCell", for: indexPath)
+            cell.textLabel?.text = nutrientForRecipe(index: indexPath.row)
+            cell.backgroundColor = .black
+            cell.textLabel?.textColor = .orange
+        default: print("Some things Wrong!!")
+        }
+        return cell
+    }
 }
