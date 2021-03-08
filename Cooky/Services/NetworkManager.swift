@@ -13,7 +13,8 @@ class NetworkManager {
     //MARK: - getRecipe
     func getRecipe(with ingredients: String, excluded: String? = nil, completion: @escaping (Edamam) -> Void)  {
         
-        let urlRecipe = APIConfigEdamam.shared.url + "&q=\(ingredients)" + "&excluded=\(excluded ?? "")"
+        
+        let urlRecipe = APIConfigEdamam.shared.url + "&q=\(ingredients)" + "&excluded=grapefruit"
         
         guard let url = URL(string: urlRecipe) else { return }
         
@@ -23,7 +24,7 @@ class NetworkManager {
                 return
             }
             
-            //guard url == response?.url else { return }
+            guard url == response?.url else { return }
             
             do {
                 let decoder = JSONDecoder()

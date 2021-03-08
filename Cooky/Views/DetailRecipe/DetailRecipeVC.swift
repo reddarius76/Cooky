@@ -24,7 +24,8 @@ class DetailRecipeVC: UIViewController {
     
     
     var recipe: Recipe?
-
+    var sections = [Section]()
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -33,7 +34,40 @@ class DetailRecipeVC: UIViewController {
         ingredientTableView.dataSource = self
         nutritionTableView.dataSource = self
         
+        sections = calcSections()
         setupUI()
+    }
+    
+    private func getNutrition() -> [Digest?] {
+        var digests = [Digest]()
+        guard let digest = recipe?.digest else { return [nil] }
+        digests.append(contentsOf: digest)
+        return digests
+    }
+    
+    private func calcSections() -> [Section] {
+        let digests = getNutrition()
+        var sections = [Section]()
+        
+        let d = digests.filter { digest -> Bool in
+            digest?.sub != nil
+        }
+        
+        d.forEach { digest in
+            var a = [Digest]()
+            digest?.sub?.forEach({ digest in
+                a.append(digest)
+            })
+            sections.append(Section(name: digest?.label ?? "Not found", nutrition: a, expanded: false))
+        }
+        
+        let c = digests.filter { digest -> Bool in
+            digest?.sub == nil
+        }
+        
+        sections.append(Section(name: "Extra", nutrition: c, expanded: false))
+
+        return sections
     }
 
     @IBAction func openWebsiteButton(_ sender: UIButton) {
@@ -69,9 +103,9 @@ class DetailRecipeVC: UIViewController {
         for i in totalDailys {
             if i.key == "ENERC_KCAL" {
                 let energyDish = i.value.quantity ?? 0.0
-                let yieldDish = Double(recipe?.yield ?? 1)
+                let yieldDish = recipe?.yield ?? 1.0
                 let energyServing = energyDish / yieldDish
-                energyDaily = String(lround(energyServing)) + "%"
+                energyDaily = String(lround(energyServing)) + (i.value.unit ?? "")
             }
         }
         
@@ -85,14 +119,26 @@ class DetailRecipeVC: UIViewController {
         }
         let label = nutrients[index].value.label ?? ""
         let quantity = String(lround(nutrients[index].value.quantity ?? 0))
-        let unit = nutrients[index].value.unit?.rawValue ?? ""
+        let unit = nutrients[index].value.unit ?? ""
         let recipeNutrient = label + " " + quantity + " " + unit
+        
         return recipeNutrient
     }
 
 }
 
-extension DetailRecipeVC: UITableViewDelegate, UITableViewDataSource {
+extension DetailRecipeVC: UITableViewDelegate, UITableViewDataSource, ExpandableHeadetViewDelegate {
+
+    func numberOfSections(in tableView: UITableView) -> Int {
+        var numberOfSections = 0
+        switch tableView {
+        case ingredientTableView: numberOfSections = 1
+        case nutritionTableView: numberOfSections = sections.count
+        default: print("Some things Wrong")
+        }
+        
+        return numberOfSections
+    }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         var numberOfRows = 0
@@ -100,8 +146,8 @@ extension DetailRecipeVC: UITableViewDelegate, UITableViewDataSource {
         case ingredientTableView:
             numberOfRows = recipe?.ingredients?.count ?? 0
         case nutritionTableView:
-            numberOfRows = recipe?.totalNutrients?.count ?? 0
-        default: print("Some things Wrong!!")
+            numberOfRows = sections[section].nutrition.count 
+        default: print("Some things Wrong")
         }
         
         return numberOfRows
@@ -117,11 +163,78 @@ extension DetailRecipeVC: UITableViewDelegate, UITableViewDataSource {
             cell.textLabel?.textColor = .orange
         case nutritionTableView:
             cell = tableView.dequeueReusableCell(withIdentifier: "nutritionCell", for: indexPath)
-            cell.textLabel?.text = nutrientForRecipe(index: indexPath.row)
+            let nameNutrition = sections[indexPath.section].nutrition[indexPath.row]?.label ?? ""
+            let qty = String(format: "%.2f", sections[indexPath.section].nutrition[indexPath.row]?.daily ?? 0)
+            let unit = sections[indexPath.section].nutrition[indexPath.row]?.unit ?? ""
+            cell.textLabel?.text = "\(nameNutrition) \(qty)\(unit)"
             cell.backgroundColor = .black
             cell.textLabel?.textColor = .orange
-        default: print("Some things Wrong!!")
+        default: print("Some things Wrong")
         }
         return cell
     }
+    
+    //Collabseble section
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        var heightForHeaderInSection = 0
+        switch tableView {
+        case ingredientTableView: heightForHeaderInSection = 0
+        case nutritionTableView: heightForHeaderInSection = 44
+        default: print("Some things Wrong")
+        }
+    
+        return CGFloat(heightForHeaderInSection)
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        var heightForRowAt = 0
+        switch tableView {
+        case ingredientTableView:
+            heightForRowAt = 44
+        case nutritionTableView:
+            if sections[indexPath.section].expanded {
+                heightForRowAt = 44
+            }
+        default: print("Some things Wrong")
+        }
+    
+        return CGFloat(heightForRowAt)
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        var heightForFooterInSection = 0
+        switch tableView {
+        case ingredientTableView:
+            heightForFooterInSection = 0
+        case nutritionTableView:
+            heightForFooterInSection = 2
+        default: print("Some things Wrong")
+        }
+    
+        return CGFloat(heightForFooterInSection)
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        switch tableView {
+        case ingredientTableView: return nil
+        case nutritionTableView:
+            let header = ExpandableHeadetView()
+            header.setup(withTitle: sections[section].name, section: section, delegate: self)
+            return header
+        default: print("Some things Wrong")
+        }
+        
+        return nil
+    }
+    
+    func toggleSection(header: ExpandableHeadetView, section: Int) {
+        sections[section].expanded.toggle()
+        
+        nutritionTableView.beginUpdates()
+        for row in 0..<sections[section].nutrition.count {
+            nutritionTableView.reloadRows(at: [IndexPath(row: row, section: section)], with: .automatic)
+        }
+        nutritionTableView.endUpdates()
+    }
 }
+

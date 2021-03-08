@@ -26,16 +26,22 @@ class RecipeCollectionViewController: UICollectionViewController {
         URLCache.shared.diskCapacity = 52428800
         //URLCache.shared.removeAllCachedResponses()
         
-        let ingredients = "banana,icecream"
-        NetworkManager.shared.getRecipe(with: ingredients) { [unowned self] edamam in
-            guard let recipe = edamam.hits else { return }
-            recipes.append(contentsOf: recipe)
-            collectionView.reloadData()
-        }
+        updateRecipe(ingredients: "banana,icecream")
         
         collectionView.showsVerticalScrollIndicator = false
         collectionView.backgroundColor = .black
+        
         setupSearchController()
+    }
+    
+    private func updateRecipe(ingredients: String) {
+        NetworkManager.shared.getRecipe(with: ingredients) { [unowned self] edamam in
+            guard let recipe = edamam.hits else { return }
+            //let recipe = edamam.hits
+            recipes.removeAll()
+            recipes.append(contentsOf: recipe)
+            collectionView.reloadData()
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -58,50 +64,19 @@ class RecipeCollectionViewController: UICollectionViewController {
         return cell
     }
 
-    // MARK: UICollectionViewDelegate
-
-    /*
-    // Uncomment this method to specify if the specified item should be highlighted during tracking
-    override func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    */
-
-    /*
-    // Uncomment this method to specify if the specified item should be selected
-    override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    */
-
-    /*
-    // Uncomment these methods to specify if an action menu should be displayed for the specified item, and react to actions performed on the item
-    override func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
-        return false
-    }
-
-    override func collectionView(_ collectionView: UICollectionView, canPerformAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) -> Bool {
-        return false
-    }
-
-    override func collectionView(_ collectionView: UICollectionView, performAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) {
-    
-    }
-    */
-
 }
 
 //MARK: - UISearchResults
-extension RecipeCollectionViewController: UISearchResultsUpdating {
-    
+extension RecipeCollectionViewController: UISearchBarDelegate {
     private func setupSearchController() {
-        searchController.searchResultsUpdater = self
-        searchController.obscuresBackgroundDuringPresentation = true
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.hidesNavigationBarDuringPresentation = false
         searchController.searchBar.placeholder = "What foods do you want to use in dish?"
         searchController.searchBar.tintColor = .orange
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
-        definesPresentationContext = false
+        definesPresentationContext = true
+        searchController.searchBar.delegate = self
         
         if let textField = searchController.searchBar.value(forKey: "searchField") as? UITextField {
             textField.font = UIFont.boldSystemFont(ofSize: 14)
@@ -114,35 +89,21 @@ extension RecipeCollectionViewController: UISearchResultsUpdating {
         }
     }
     
-    func updateSearchResults(for searchController: UISearchController) {
-//        searchName = searchController.searchBar.text
-//        filterCharacterForSearchText(searchName!)
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        guard let text = searchBar.text else { return }
+        if text == "" {
+            searchBar.setShowsCancelButton(false, animated: false)
+            return
+        }
+        let ingredients = text.replacingOccurrences(of: " ", with: "")
+        searchBar.setShowsCancelButton(false, animated: false)
+        updateRecipe(ingredients: ingredients)
     }
     
-    private func clearSearch() {
-//        countPagesSearch = nil
-//        currentPageSearch = 1
-//        cellStepSearch = 20
-//        charactersSearch.removeAll()
-//        dataTasksSearch.removeAll()
-//        tableView.reloadData()
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        searchBar.setShowsCancelButton(true, animated: false)
     }
-    
-    private func filterCharacterForSearchText(_ searchText: String) {
-        clearSearch()
-        
-//        if searchText == "" { return }
-//
-//        let dataTaskFromFirstPageSearch = NetworkManager.shared.fetchCharacter(url: urlAPI.urlCharacter.rawValue, page: currentPageSearch, name: searchText, dataTasks: dataTasksSearch) { [self] infoCharacter in
-//
-//            guard let results = infoCharacter?.results else { return }
-//            countPagesSearch = infoCharacter?.info?.pages
-//            charactersSearch.append(contentsOf: results)
-//            currentPageSearch = currentPageSearch + 1
-//            tableView.reloadData()
-//        }
-//        dataTasksSearch.append(dataTaskFromFirstPageSearch)
-    }
+
 }
 
 
@@ -168,3 +129,4 @@ extension RecipeCollectionViewController: UICollectionViewDelegateFlowLayout {
         return 4
     }
 }
+

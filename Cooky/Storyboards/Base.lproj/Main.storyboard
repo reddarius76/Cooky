@@ -131,7 +131,7 @@
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <tableView clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="nutritionTableView" bounces="NO" scrollEnabled="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="UWQ-9M-SMs">
+                                            <tableView clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="nutritionTableView" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="UWQ-9M-SMs">
                                                 <rect key="frame" x="8" y="685.5" width="398" height="300"/>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                 <constraints>
@@ -270,7 +270,7 @@
                                 <size key="customSize" width="181" height="181"/>
                                 <connections>
                                     <outlet property="imageRecipeImageView" destination="eLN-7J-ScY" id="iMS-cy-hQl"/>
-                                    <segue destination="B6i-UW-61d" kind="show" id="5aH-Dv-GBu"/>
+                                    <segue destination="B6i-UW-61d" kind="show" id="KTT-ev-iOy"/>
                                 </connections>
                             </collectionViewCell>
                         </cells>

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7346612825F6312A0032FC8B /* ExpandableHeadetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7346612725F6312A0032FC8B /* ExpandableHeadetView.swift */; };
+		7346612B25F6527B0032FC8B /* Section.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7346612A25F6527B0032FC8B /* Section.swift */; };
 		737482E625EC49810081CF8C /* MainNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 737482E525EC49810081CF8C /* MainNavigationController.swift */; };
 		7376F22C25F0E9CE00A36E21 /* DetailRecipeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7376F22B25F0E9CE00A36E21 /* DetailRecipeVC.swift */; };
 		73CE0B7F25EFBFE500D55175 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73CE0B7E25EFBFE500D55175 /* NetworkManager.swift */; };
@@ -26,6 +28,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7346612725F6312A0032FC8B /* ExpandableHeadetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableHeadetView.swift; sourceTree = "<group>"; };
+		7346612A25F6527B0032FC8B /* Section.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Section.swift; sourceTree = "<group>"; };
 		737482E525EC49810081CF8C /* MainNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainNavigationController.swift; sourceTree = "<group>"; };
 		7376F22B25F0E9CE00A36E21 /* DetailRecipeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailRecipeVC.swift; sourceTree = "<group>"; };
 		73CE0B7E25EFBFE500D55175 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
@@ -101,6 +105,7 @@
 			isa = PBXGroup;
 			children = (
 				7376F22B25F0E9CE00A36E21 /* DetailRecipeVC.swift */,
+				7346612725F6312A0032FC8B /* ExpandableHeadetView.swift */,
 			);
 			path = DetailRecipe;
 			sourceTree = "<group>";
@@ -149,6 +154,7 @@
 				73F9E12725EC018900810F7C /* Edamam.swift */,
 				73F9E11625EBA94800810F7C /* RecipeTest.swift */,
 				73F9E12325EBE0D200810F7C /* IngredientTest.swift */,
+				7346612A25F6527B0032FC8B /* Section.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -223,6 +229,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7346612B25F6527B0032FC8B /* Section.swift in Sources */,
 				737482E625EC49810081CF8C /* MainNavigationController.swift in Sources */,
 				73F9E11325EBA47E00810F7C /* RecipeCollectionViewController.swift in Sources */,
 				73CE0B8725EFCFF900D55175 /* RecipeImageView.swift in Sources */,
@@ -232,6 +239,7 @@
 				73CE0B8325EFC01E00D55175 /* Сonstants.swift in Sources */,
 				7376F22C25F0E9CE00A36E21 /* DetailRecipeVC.swift in Sources */,
 				73F9E0F625EBA23F00810F7C /* AppDelegate.swift in Sources */,
+				7346612825F6312A0032FC8B /* ExpandableHeadetView.swift in Sources */,
 				73F9E12825EC018900810F7C /* Edamam.swift in Sources */,
 				73F9E12125EBD43600810F7C /* RecipeCell.swift in Sources */,
 				73F9E0F825EBA23F00810F7C /* SceneDelegate.swift in Sources */,

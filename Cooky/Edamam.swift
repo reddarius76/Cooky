@@ -32,7 +32,7 @@ struct Recipe: Decodable {
     let source: String?
     let url: String?
     let shareAs: String?
-    let yield: Int?
+    let yield: Double?
     let dietLabels: [String]?
     let healthLabels: [String]?
     let cautions: [String]?
@@ -41,6 +41,9 @@ struct Recipe: Decodable {
     let calories: Double?
     let totalWeight: Double?
     let totalTime: Int?
+    let cuisineType: [String]?
+    let mealType: [String]?
+    let dishType: [String]?
     let totalNutrients: [String: Total]?
     let totalDaily: [String: Total]?
     let digest: [Digest]?
@@ -54,22 +57,16 @@ struct Digest: Decodable {
     let total: Double?
     let hasRdi: Bool?
     let daily: Double?
-    let unit: Unit?
+    let unit: String?
     let sub: [Digest]?
-}
-
-enum Unit: String, Decodable {
-    case empty = "%"
-    case g = "g"
-    case kcal = "kcal"
-    case mg = "mg"
-    case µg = "µg"
 }
 
 // MARK: - Ingredient
 struct Ingredient: Decodable {
     let text: String?
     let weight: Double?
+    let foodCategory: String?
+    let foodId: String?
     let image: String?
 }
 
@@ -77,5 +74,5 @@ struct Ingredient: Decodable {
 struct Total: Decodable {
     let label: String?
     let quantity: Double?
-    let unit: Unit?
+    let unit: String?
 }
