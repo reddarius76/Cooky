@@ -7,7 +7,7 @@
 
 import UIKit
 
-class DetailRecipeVC: UIViewController {
+class DetailRecipeViewController: UIViewController {
     
     @IBOutlet weak var dishImageView: RecipeImageView!
     
@@ -24,7 +24,7 @@ class DetailRecipeVC: UIViewController {
     
     
     var recipe: Recipe?
-    var sections = [Section]()
+    private var sections = [Section]()
         
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,8 +33,12 @@ class DetailRecipeVC: UIViewController {
         nutritionTableView.delegate = self
         ingredientTableView.dataSource = self
         nutritionTableView.dataSource = self
-        
         sections = calcSections()
+        dishImageView.fetchImageRecipe(from: recipe?.image ?? "")
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         setupUI()
     }
     
@@ -78,8 +82,7 @@ class DetailRecipeVC: UIViewController {
     
     private func setupUI() {
         navigationItem.title = recipe?.label
-        
-        dishImageView.fetchImageRecipe(from: recipe?.image ?? "")
+    
         dishImageView.layer.cornerRadius = 7
         
         caloriesOfDishLabel.text = String(lround(recipe?.calories ?? 0))
@@ -127,7 +130,7 @@ class DetailRecipeVC: UIViewController {
 
 }
 
-extension DetailRecipeVC: UITableViewDelegate, UITableViewDataSource, ExpandableHeadetViewDelegate {
+extension DetailRecipeViewController: UITableViewDelegate, UITableViewDataSource, ExpandableHeadetViewDelegate {
 
     func numberOfSections(in tableView: UITableView) -> Int {
         var numberOfSections = 0

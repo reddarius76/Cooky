@@ -8,9 +8,19 @@
 import UIKit
 
 class MainNavigationController: UINavigationController {
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        URLCache.shared.diskCapacity = 52428800
+        //URLCache.shared.removeAllCachedResponses()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupUI()
+    }
+    
+    private func setupUI() {
         navigationBar.topItem?.title = "Cooky"
         UINavigationBar.appearance().titleTextAttributes = [
             NSAttributedString.Key.foregroundColor: UIColor.white,

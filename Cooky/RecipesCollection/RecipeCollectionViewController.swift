@@ -10,48 +10,44 @@ import UIKit
 class RecipeCollectionViewController: UICollectionViewController {
     
     private var recipes = [Hit]()
-    
-    private let searchController = UISearchController(searchResultsController: nil)
-    private var searchBarIsEmpty: Bool {
-        guard let text = searchController.searchBar.text else { return false }
-        return text.isEmpty
-    }
-    private var isFiltering: Bool {
-        return searchController.isActive && !searchBarIsEmpty
-    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        URLCache.shared.diskCapacity = 52428800
-        //URLCache.shared.removeAllCachedResponses()
-        
         updateRecipe(ingredients: "banana,icecream")
-        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupUI()
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard let indexPath = collectionView.indexPathsForSelectedItems?.first else { return }
+        let index = indexPath.row
+        guard let detailRecipeVC = segue.destination as? DetailRecipeViewController else { return }
+        detailRecipeVC.recipe = recipes[index].recipe
+    }
+    
+    private func setupUI() {
         collectionView.showsVerticalScrollIndicator = false
         collectionView.backgroundColor = .black
-        
         setupSearchController()
     }
     
     private func updateRecipe(ingredients: String) {
         NetworkManager.shared.getRecipe(with: ingredients) { [unowned self] edamam in
             guard let recipe = edamam.hits else { return }
-            //let recipe = edamam.hits
             recipes.removeAll()
             recipes.append(contentsOf: recipe)
-            collectionView.reloadData()
+            DispatchQueue.main.async {
+                collectionView.reloadData()
+            }
         }
     }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard let indexPath = collectionView.indexPathsForSelectedItems?.first else { return }
-        let index = indexPath.row
-        let detailRecipeVC = segue.destination as! DetailRecipeVC
-        detailRecipeVC.recipe = recipes[index].recipe
-    }
+}
 
-    // MARK: UICollectionViewDataSource
+// MARK: UICollectionViewDataSource
+extension RecipeCollectionViewController {
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return recipes.count
     }
@@ -63,20 +59,43 @@ class RecipeCollectionViewController: UICollectionViewController {
         cell.configureCell(with: recipe.recipe!)
         return cell
     }
+}
 
+//MARK: - UICollectionViewDelegateFlowLayout
+extension RecipeCollectionViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let numberOfCellInRow: CGFloat = 2
+        let paddingWidth = 4 * (numberOfCellInRow + 1)
+        let availableWidth = collectionView.frame.width - paddingWidth
+        let widthItem = availableWidth / numberOfCellInRow
+        return CGSize(width: widthItem, height: widthItem)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 4
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 4
+    }
 }
 
 //MARK: - UISearchResults
 extension RecipeCollectionViewController: UISearchBarDelegate {
     private func setupSearchController() {
+        let searchController = UISearchController(searchResultsController: nil)
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.hidesNavigationBarDuringPresentation = false
+        searchController.searchBar.delegate = self
         searchController.searchBar.placeholder = "What foods do you want to use in dish?"
         searchController.searchBar.tintColor = .orange
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
         definesPresentationContext = true
-        searchController.searchBar.delegate = self
         
         if let textField = searchController.searchBar.value(forKey: "searchField") as? UITextField {
             textField.font = UIFont.boldSystemFont(ofSize: 14)
@@ -102,31 +121,6 @@ extension RecipeCollectionViewController: UISearchBarDelegate {
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         searchBar.setShowsCancelButton(true, animated: false)
-    }
-
-}
-
-
-//MARK: - UICollectionViewDelegateFlowLayout
-extension RecipeCollectionViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let numberOfCellInRow: CGFloat = 2
-        let paddingWidth = 4 * (numberOfCellInRow + 1)
-        let availableWidth = collectionView.frame.width - paddingWidth
-        let widthItem = availableWidth / numberOfCellInRow
-        return CGSize(width: widthItem, height: widthItem)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 4
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 4
     }
 }
 

@@ -20,7 +20,6 @@ class ExpandableHeadetView: UITableViewHeaderFooterView {
         self.delegate = delegate
         self.section = section
         self.textLabel?.text = title
-        
     }
     
     override func layoutSubviews() {

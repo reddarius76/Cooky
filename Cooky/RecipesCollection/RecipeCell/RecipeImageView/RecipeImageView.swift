@@ -12,7 +12,7 @@ class RecipeImageView: UIImageView {
     //MARK: - fetchImageRecipe()
     func fetchImageRecipe(from url: String) {
         guard let imageURL = URL(string: url) else {
-            image = UIImage(systemName: "person.circle")?.withTintColor(.red, renderingMode: .alwaysOriginal)
+            image = UIImage(systemName: "text.justify")?.withTintColor(.orange, renderingMode: .alwaysOriginal)
             return
         }
         
@@ -21,11 +21,11 @@ class RecipeImageView: UIImageView {
             return
         }
         
-        NetworkManager.shared.fetchImage(from: imageURL) { data, response in
+        NetworkManager.shared.fetchImage(from: imageURL) { [unowned self] data, response in
             DispatchQueue.main.async {
-                self.image = UIImage(data: data)
+                image = UIImage(data: data)
             }
-            self.saveDataToCache(with: data, and: response)
+            saveDataToCache(with: data, and: response)
         }
     }
     

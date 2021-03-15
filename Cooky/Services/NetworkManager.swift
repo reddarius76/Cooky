@@ -12,12 +12,11 @@ class NetworkManager {
     
     //MARK: - getRecipe
     func getRecipe(with ingredients: String, excluded: String? = nil, completion: @escaping (Edamam) -> Void)  {
-        
-        
+
         let urlRecipe = APIConfigEdamam.shared.url + "&q=\(ingredients)" + "&excluded=grapefruit"
         
         guard let url = URL(string: urlRecipe) else { return }
-        
+
         URLSession.shared.dataTask(with: url) { data, response, error in
             guard let data = data else {
                 print(error?.localizedDescription ?? "no localized description")
@@ -30,9 +29,7 @@ class NetworkManager {
                 let decoder = JSONDecoder()
                 decoder.keyDecodingStrategy = .convertFromSnakeCase
                 let resultRecipe = try decoder.decode(Edamam.self, from: data)
-                DispatchQueue.main.async {
-                    completion(resultRecipe)
-                }
+                completion(resultRecipe)
             } catch let error {
                 print("error JSONDecoder: \(error)")
             }
@@ -53,5 +50,3 @@ class NetworkManager {
     
     private init(){}
 }
-
-
