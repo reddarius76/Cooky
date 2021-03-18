@@ -10,10 +10,11 @@ import UIKit
 class RecipeCollectionViewController: UICollectionViewController {
     
     private var recipes = [Hit]()
-
+    private let dataFetchManager = DataFetchManager()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        updateRecipe(ingredients: "banana,icecream")
+        updateRecipe(ingredients: "salmon")
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -35,8 +36,9 @@ class RecipeCollectionViewController: UICollectionViewController {
     }
     
     private func updateRecipe(ingredients: String) {
-        NetworkManager.shared.getRecipe(with: ingredients) { [unowned self] edamam in
-            guard let recipe = edamam.hits else { return }
+        let urlRecipe = APIConfigEdamam.shared.url + "&q=\(ingredients)"
+        dataFetchManager.fetchRecipe(urlString: urlRecipe) { [unowned self] (edamam) in
+            guard let recipe = edamam?.hits else { return }
             recipes.removeAll()
             recipes.append(contentsOf: recipe)
             DispatchQueue.main.async {

@@ -10,8 +10,8 @@ import UIKit
 class RecipeImageView: UIImageView {
 
     //MARK: - fetchImageRecipe()
-    func fetchImageRecipe(from url: String) {
-        guard let imageURL = URL(string: url) else {
+    func fetchImageRecipe(from urlString: String) {
+        guard let imageURL = URL(string: urlString) else {
             image = UIImage(systemName: "text.justify")?.withTintColor(.orange, renderingMode: .alwaysOriginal)
             return
         }
@@ -21,7 +21,13 @@ class RecipeImageView: UIImageView {
             return
         }
         
-        NetworkManager.shared.fetchImage(from: imageURL) { [unowned self] data, response in
+        NetworkManager.shared.request(urlString: urlString) { [unowned self] (data, response, error) in
+            guard let url = URL(string: urlString) else { return }
+            guard url == response?.url else { return }
+            guard let data = data, let response = response else {
+                print(error?.localizedDescription ?? "Didn't receive the image over the network")
+                return
+            }
             DispatchQueue.main.async {
                 image = UIImage(data: data)
             }
